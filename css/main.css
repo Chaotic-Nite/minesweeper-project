@@ -1,7 +1,13 @@
 body {
+  background: #2e2e2e;
   text-align: center;
 }
 
+h1 {
+  color: whitesmoke;
+}
+
 canvas {
-  align-content: center;
+  width: 401px;
+  height: 401px;
 }
