@@ -25,8 +25,10 @@ function setup(canvas) {
 
 window.onload = function () {
   let canvas = document.getElementById("gameBoard");
+  canvas.width = window.innerWidth * 0.8;
+  canvas.height = window.innerHeight * 0.8;
 
   let ctx = canvas.getContext("2d");
   ctx.fillStyle = "#CCCCCC";
-  ctx.fillRect(5, 5, 1000, 1000);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
