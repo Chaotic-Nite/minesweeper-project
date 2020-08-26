@@ -5,7 +5,7 @@
 let ctx = null;
 let grid;
 let firstClick = true;
-let bombCount = 25;
+let bombCount = 15;
 let size = 35;
 let col = 10;
 let row = 10;
@@ -34,6 +34,7 @@ function Setup() {
   ctx.scale(1.15, 1.15);
 
   drawCell();
+
   createBombs();
 }
 
@@ -45,13 +46,6 @@ function drawCell() {
   for (let i = 0; i < col; i++) {
     for (let j = 0; j < row; j++) {
       grid[i][j] = new Cell(i, j, size);
-    }
-  }
-
-  // Display the board
-  for (let i = 0; i < col; i++) {
-    for (let j = 0; j < row; j++) {
-      grid[i][j].show();
     }
   }
 }
@@ -69,7 +63,8 @@ function createBombs() {
 
   for (let i = 0; i < col; i++) {
     for (let j = 0; j < row; j++) {
-      grid[i][j].bomb();
+      grid[i][j].bombCount();
+      grid[i][j].show();
     }
   }
 }

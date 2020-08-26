@@ -3,8 +3,6 @@ body {
   text-align: center;
   overflow: hidden;
   display: block;
-}
-
-h1 {
   color: whitesmoke;
+  font-family: fantasy;
 }
