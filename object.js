@@ -48,18 +48,20 @@ class Cell {
   }
 
   bombCount() {
+    // Determines how many bombs are touching the cell
     if (this.isBomb) {
       return;
     }
     for (let seeX = -1; seeX <= 1; seeX++) {
       for (let seeY = -1; seeY <= 1; seeY++) {
+        // Cycles through each cell in a 3x3 to determine if any edge/corner touch a bomb
         let offSetX = this.i + seeX;
         let offSetY = this.j + seeY;
         if (
           offSetX > -1 &&
-          offSetX < col &&
+          offSetX < columns &&
           offSetY > -1 &&
-          offSetY < row &&
+          offSetY < rows &&
           grid[offSetX][offSetY].isBomb
         ) {
           this.bombNeighbor++;
@@ -69,6 +71,7 @@ class Cell {
   }
 
   notBomb() {
+    // Creates the canvas numbers and placements
     if (this.bombNeighbor > 0) {
       ctx.fillStyle = "black";
       ctx.font = "20px Arial";
@@ -76,5 +79,9 @@ class Cell {
     }
 
     ctx.stroke();
+  }
+
+  reveal() {
+    this.isRevealed = false;
   }
 }
