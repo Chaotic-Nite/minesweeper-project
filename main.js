@@ -5,38 +5,44 @@
 let ctx = null;
 let grid;
 let firstClick = true;
-let bombCount = 15;
+let bombCount = 25;
 let size = 35;
-let columns = 10;
-let rows = 10;
+let boardSize = 15;
 let canvas = document.getElementById("gameBoard");
 let mouseClick = [];
 
-function twoDArray(col, row) {
+function twoDArray(gameGrid) {
   // Creates a 2D array
-  let arr = new Array(col);
-  for (let i = 0; i < row; i++) {
-    arr[i] = new Array(row);
+  let arr = new Array(gameGrid);
+  for (let i = 0; i < gameGrid; i++) {
+    arr[i] = new Array(gameGrid);
   }
   return arr;
+}
+
+// Constructs the canvas to be an accurate size to the boardSize
+function buildCanvas() {
+  canvas.width = 0;
+  canvas.height = 0;
+  for (let i = 0; i < boardSize; i++) {
+    canvas.height += size;
+    canvas.width += size;
+  }
+  canvas.height += 1;
+  canvas.width += 1;
 }
 
 function Setup() {
   // Setup canvas
   ctx = canvas.getContext("2d");
-  canvas.width = 401;
-  canvas.height = 401;
+
+  buildCanvas();
   // Set white background
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, canvas.width, canvas.width);
 
-  // Scaled ctx to fit canvas frame
-  ctx.scale(1.15, 1.15);
-
   drawCell();
-
   createBombs();
-
   showBoard();
 }
 
@@ -45,11 +51,11 @@ function Setup() {
 // Creates the grid for the mines
 function drawCell() {
   // Constructs the 2D array for the cells
-  grid = twoDArray(columns, rows);
+  grid = twoDArray(boardSize);
 
   // Create cells that hold the grid
-  for (let i = 0; i < columns; i++) {
-    for (let j = 0; j < rows; j++) {
+  for (let i = 0; i < boardSize; i++) {
+    for (let j = 0; j < boardSize; j++) {
       grid[i][j] = new Cell(i, j, size);
     }
   }
@@ -58,8 +64,8 @@ function drawCell() {
 // Places bombs onto the field
 function createBombs() {
   while (bombCount != 0) {
-    let x = Math.floor(Math.random(0, columns) * columns);
-    let y = Math.floor(Math.random(0, rows) * rows);
+    let x = Math.floor(Math.random(0, boardSize) * boardSize);
+    let y = Math.floor(Math.random(0, boardSize) * boardSize);
 
     if (!grid[x][y].isBomb) {
       grid[x][y].isBomb = true;
@@ -67,8 +73,8 @@ function createBombs() {
     }
   }
 
-  for (let i = 0; i < columns; i++) {
-    for (let j = 0; j < rows; j++) {
+  for (let i = 0; i < boardSize; i++) {
+    for (let j = 0; j < boardSize; j++) {
       grid[i][j].bombCount();
     }
   }
@@ -79,15 +85,49 @@ function createBombs() {
 function checkCell() {
   let x = mouseClick[0],
     y = mouseClick[1];
-  // Checks the cell
+  for (let i = 0; i < boardSize; i++) {
+    for (let j = 0; j < boardSize; j++) {
+      if (
+        isBetween(x, grid[i][j].x, grid[i][j].x + grid[i][j].size) &&
+        isBetween(y, grid[i][j].y, grid[i][j].y + grid[i][j].size)
+      ) {
+        if (grid[i][j].isBomb) {
+          alert("Game Over");
+          gameOver();
+        } else {
+          grid[i][j].reveal();
+          grid[i][j].show();
+        }
+      }
+    }
+  }
 }
 
 // Makes the board visible
 function showBoard() {
-  for (let i = 0; i < columns; i++) {
-    for (let j = 0; j < rows; j++) {
+  for (let i = 0; i < boardSize; i++) {
+    for (let j = 0; j < boardSize; j++) {
       grid[i][j].show();
     }
+  }
+}
+
+// Function to call for reveal of the game
+function gameOver() {
+  for (let i = 0; i < boardSize; i++) {
+    for (let j = 0; j < boardSize; j++) {
+      grid[i][j].reveal();
+      grid[i][j].show();
+    }
+  }
+}
+
+// Function to check if a number is in a range.
+function isBetween(target, min, max) {
+  if (target > min && target < max) {
+    return true;
+  } else {
+    return false;
   }
 }
 
@@ -97,7 +137,6 @@ function cursorPos(canvas, event) {
   const board = canvas.getBoundingClientRect();
   const x = event.clientX - board.left;
   const y = event.clientY - board.top;
-  console.log("x: " + x + " Y: " + y);
   mouseClick = [x, y];
 }
 
