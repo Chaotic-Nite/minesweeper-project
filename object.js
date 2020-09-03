@@ -15,7 +15,7 @@ class Cell {
 
     // Bomb information
     this.isBomb = false;
-    this.isRevealed = true;
+    this.isRevealed = false;
     this.bombNeighbor = 0;
   }
 
@@ -31,22 +31,19 @@ class Cell {
   }
 
   bomb() {
-    ctx.beginPath();
-    if (this.isBomb) {
-      ctx.fillStyle = "red";
-
-      ctx.arc(
-        this.x + this.size * 0.5,
-        this.y + this.size * 0.5,
-        13,
-        0,
-        2 * Math.PI
-      );
+    if (this.isRevealed) {
+      ctx.beginPath();
+      if (this.isBomb) {
+        ctx.fillStyle = "black";
+        ctx.font = "900 20px Arial";
+        ctx.fillText("♞", this.x + 5, this.y + this.size / 1.5);
+      }
+      ctx.fill();
+      ctx.stroke();
     }
-    ctx.fill();
-    ctx.stroke();
   }
 
+  // For the innocent cells
   bombCount() {
     // Determines how many bombs are touching the cell
     if (this.isBomb) {
@@ -59,9 +56,9 @@ class Cell {
         let offSetY = this.j + seeY;
         if (
           offSetX > -1 &&
-          offSetX < columns &&
+          offSetX < boardSize &&
           offSetY > -1 &&
-          offSetY < rows &&
+          offSetY < boardSize &&
           grid[offSetX][offSetY].isBomb
         ) {
           this.bombNeighbor++;
@@ -72,16 +69,20 @@ class Cell {
 
   notBomb() {
     // Creates the canvas numbers and placements
-    if (this.bombNeighbor > 0) {
-      ctx.fillStyle = "black";
-      ctx.font = "20px Arial";
-      ctx.fillText(this.bombNeighbor, this.x + 12, this.y + this.size / 1.5);
-    }
+    if (this.isRevealed) {
+      if (this.bombNeighbor > 0) {
+        ctx.fillStyle = "black";
+        ctx.font = "900 20px Arial";
+        ctx.fillText(this.bombNeighbor, this.x + 12, this.y + this.size / 1.5);
+      }
 
-    ctx.stroke();
+      ctx.stroke();
+    }
   }
 
   reveal() {
-    this.isRevealed = false;
+    if (this.isRevealed === false) {
+      this.isRevealed = true;
+    }
   }
 }
