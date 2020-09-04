@@ -6,8 +6,8 @@ let ctx = null;
 let grid;
 let firstClick = true;
 let bombCount = 25;
-let size = 35;
-let boardSize = 15;
+let sizeCell = 40;
+let boardSize = 14;
 let canvas = document.getElementById("gameBoard");
 let mouseClick = [];
 
@@ -25,11 +25,9 @@ function buildCanvas() {
   canvas.width = 0;
   canvas.height = 0;
   for (let i = 0; i < boardSize; i++) {
-    canvas.height += size;
-    canvas.width += size;
+    canvas.height += sizeCell;
+    canvas.width += sizeCell;
   }
-  canvas.height += 1;
-  canvas.width += 1;
 }
 
 function Setup() {
@@ -56,7 +54,7 @@ function drawCell() {
   // Create cells that hold the grid
   for (let i = 0; i < boardSize; i++) {
     for (let j = 0; j < boardSize; j++) {
-      grid[i][j] = new Cell(i, j, size);
+      grid[i][j] = new Cell(i, j, sizeCell);
     }
   }
 }
@@ -92,7 +90,6 @@ function checkCell() {
         isBetween(y, grid[i][j].y, grid[i][j].y + grid[i][j].size)
       ) {
         if (grid[i][j].isBomb) {
-          alert("Game Over");
           gameOver();
         } else {
           grid[i][j].reveal();
