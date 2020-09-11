@@ -3,15 +3,15 @@
 // By Noel Kling
 
 class Cell {
-  constructor(i, j, sizeCell) {
+  constructor(i, j, size) {
     // Iterators
     this.i = i;
     this.j = j;
 
     // Grid based information
-    this.x = i * sizeCell;
-    this.y = j * sizeCell;
-    this.size = sizeCell;
+    this.x = i * size;
+    this.y = j * size;
+    this.size = size;
 
     // Bomb information
     this.isBomb = false;
@@ -59,10 +59,8 @@ class Cell {
         let offSetX = this.i + seeX;
         let offSetY = this.j + seeY;
         if (
-          offSetX > -1 &&
-          offSetX < boardSize &&
-          offSetY > -1 &&
-          offSetY < boardSize &&
+          isBetween(offSetX, -1, mineS.boardSize) &&
+          isBetween(offSetY, -1, mineS.boardSize) &&
           grid[offSetX][offSetY].isBomb
         ) {
           this.bombNeighbor++;
@@ -100,10 +98,8 @@ class Cell {
         let offSetX = this.i + seeX;
         let offSetY = this.j + seeY;
         if (
-          offSetX > -1 &&
-          offSetX < boardSize &&
-          offSetY > -1 &&
-          offSetY < boardSize
+          isBetween(offSetX, -1, mineS.boardSize) &&
+          isBetween(offSetY, -1, mineS.boardSize)
         ) {
           let cellFill = grid[offSetX][offSetY];
           if (!cellFill.isBomb && !cellFill.isRevealed) {
