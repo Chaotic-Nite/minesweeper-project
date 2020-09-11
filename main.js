@@ -4,12 +4,16 @@
 
 let ctx = null;
 let grid;
-let firstClick = true;
-let bombCount = 25;
-let sizeCell = 40;
-let boardSize = 14;
-let canvas = document.getElementById("gameBoard");
-let mouseClick = [];
+
+let mineS = {
+  ctx: null,
+  firstClick: true,
+  bombCount: 25,
+  sizeCell: 40,
+  boardSize: 14,
+  canvas: document.getElementById("gameBoard"),
+  mouseClick: { x: 0, y: 0, clickType: 0 },
+};
 
 function twoDArray(gameGrid) {
   // Creates a 2D array
@@ -22,22 +26,22 @@ function twoDArray(gameGrid) {
 
 // Constructs the canvas to be an accurate size to the boardSize
 function buildCanvas() {
-  canvas.width = 0;
-  canvas.height = 0;
-  for (let i = 0; i < boardSize; i++) {
-    canvas.height += sizeCell;
-    canvas.width += sizeCell;
+  mineS.canvas.width = 0;
+  mineS.canvas.height = 0;
+  for (let i = 0; i < mineS.boardSize; i++) {
+    mineS.canvas.height += mineS.sizeCell;
+    mineS.canvas.width += mineS.sizeCell;
   }
 }
 
 function Setup() {
   // Setup canvas
-  ctx = canvas.getContext("2d");
+  ctx = mineS.canvas.getContext("2d");
 
   buildCanvas();
   // Set white background
   ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, canvas.width, canvas.width);
+  ctx.fillRect(0, 0, mineS.canvas.width, mineS.canvas.width);
 
   drawCell();
   createBombs();
@@ -49,30 +53,43 @@ function Setup() {
 // Creates the grid for the mines
 function drawCell() {
   // Constructs the 2D array for the cells
-  grid = twoDArray(boardSize);
-
+  grid = twoDArray(mineS.boardSize);
   // Create cells that hold the grid
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
-      grid[i][j] = new Cell(i, j, sizeCell);
+  for (let i = 0; i < mineS.boardSize; i++) {
+    for (let j = 0; j < mineS.boardSize; j++) {
+      grid[i][j] = new Cell(i, j, mineS.sizeCell);
     }
   }
 }
 
 // Places bombs onto the field
 function createBombs() {
-  while (bombCount != 0) {
-    let x = Math.floor(Math.random(0, boardSize) * boardSize);
-    let y = Math.floor(Math.random(0, boardSize) * boardSize);
+  while (mineS.bombCount != 0) {
+    let x = randomPos();
+    let y = randomPos();
 
     if (!grid[x][y].isBomb) {
       grid[x][y].isBomb = true;
-      bombCount--;
+      mineS.bombCount--;
     }
   }
 
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
+  mainBombCount();
+}
+
+function swapToBomb(oldPos) {
+  let newBomb = grid[randomPos()][randomPos()];
+  if (newBomb != oldPos && !newBomb.isBomb) {
+    newBomb.isBomb;
+    mainBombCount();
+  }
+}
+
+// Updates the number count on field
+
+function mainBombCount() {
+  for (let i = 0; i < mineS.boardSize; i++) {
+    for (let j = 0; j < mineS.boardSize; j++) {
       grid[i][j].bombCount();
     }
   }
@@ -80,44 +97,72 @@ function createBombs() {
 
 // Checks and Reveals -
 
+// Will look to see to see what cell the mouse click happens in
 function checkCell() {
-  let x = mouseClick[0],
-    y = mouseClick[1];
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
+  let x = mineS.mouseClick.x,
+    y = mineS.mouseClick.y;
+  for (let i = 0; i < mineS.boardSize; i++) {
+    for (let j = 0; j < mineS.boardSize; j++) {
       if (
         isBetween(x, grid[i][j].x, grid[i][j].x + grid[i][j].size) &&
         isBetween(y, grid[i][j].y, grid[i][j].y + grid[i][j].size)
       ) {
-        if (grid[i][j].isBomb) {
-          gameOver();
-        } else {
-          grid[i][j].reveal();
-          grid[i][j].show();
+        switch (mineS.mouseClick.clickType) {
+          case 1:
+            setUpCell(grid[i][j]);
+            break;
+          case 3:
+            console.log("HEIEHLRKHSL");
         }
       }
     }
   }
 }
 
+function setUpCell(cell) {
+  switch (mineS.firstClick) {
+    case true:
+      if (cell.isBomb) {
+        cell.isBomb = false;
+        swapToBomb(oldPos);
+      }
+      mineS.firstClick = false;
+      revealShow(cell);
+      break;
+    default:
+      if (cell.isBomb) {
+        console.log("FUCK");
+      } else {
+        revealShow(cell);
+      }
+  }
+}
+
+// Switch case that will do reveals and shows
+function revealShow(cell, x) {
+  switch (x) {
+    case 1:
+      cell.reveal();
+      break;
+    case 2:
+      cell.show();
+      break;
+    default:
+      cell.reveal();
+      cell.show();
+  }
+}
+
 // Makes the board visible
 function showBoard() {
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
-      grid[i][j].show();
+  for (let i = 0; i < mineS.boardSize; i++) {
+    for (let j = 0; j < mineS.boardSize; j++) {
+      revealShow(grid[i][j], 2);
     }
   }
 }
 
-// Function to call for reveal of the game
-function gameOver() {
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
-      grid[i][j].reveal();
-      grid[i][j].show();
-    }
-  }
-}
+// Set of functions for back end of the functions.
 
 // Function to check if a number is in a range.
 function isBetween(target, min, max) {
@@ -128,13 +173,26 @@ function isBetween(target, min, max) {
   }
 }
 
+function randomPos() {
+  return Math.floor(Math.random(0, mineS.boardSize) * mineS.boardSize);
+}
+
 // Stack Overflow explained how to find the points
 // It calculates where the poistion of the click is on the canvas only.
 function cursorPos(canvas, event) {
   const board = canvas.getBoundingClientRect();
   const x = event.clientX - board.left;
   const y = event.clientY - board.top;
-  mouseClick = [x, y];
+  mineS.mouseClick.x = x;
+  mineS.mouseClick.y = y;
+  switch (event.which) {
+    case 1:
+      mineS.mouseClick.clickType = 1;
+      break;
+    case 3:
+      mineS.mouseClick.clickType = 3;
+      break;
+  }
 }
 
 function updateMap() {
@@ -147,9 +205,20 @@ function loop() {
   window.requestAnimationFrame(loop);
 }
 
-canvas.addEventListener("mouseup", function (e) {
-  cursorPos(canvas, e);
+mineS.canvas.addEventListener("mouseup", function (e) {
+  cursorPos(mineS.canvas, e);
+  if (e.which === 3) {
+    e.preventDefault();
+  }
 });
+
+mineS.canvas.addEventListener(
+  "contextmenu",
+  function (e) {
+    e.preventDefault();
+  },
+  false
+);
 
 document.addEventListener("DOMContentLoaded", Setup);
 
