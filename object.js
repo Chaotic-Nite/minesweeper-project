@@ -16,34 +16,35 @@ class Cell {
     // Bomb information
     this.isBomb = false;
     this.isRevealed = false;
+    this.isFlag = false;
     this.bombNeighbor = 0;
   }
 
   show() {
     this.cell();
-    // Calls to draw the bombs on to the grid
+    // Calls to draw the bombs on to the mineS.grid
     this.notBomb();
 
     this.bomb();
   }
 
   cell() {
-    // Constructs the visual grid based on the cells
-    ctx.strokeStyle = "#000000";
-    ctx.rect(this.x, this.y, this.size, this.size);
-    ctx.stroke();
+    // Constructs the visual mineS.grid based on the cells
+    mineS.ctx.strokeStyle = "#000000";
+    mineS.ctx.rect(this.x, this.y, this.size, this.size);
+    mineS.ctx.stroke();
   }
 
   bomb() {
     if (this.isRevealed) {
-      ctx.beginPath();
+      mineS.ctx.beginPath();
       if (this.isBomb) {
-        ctx.fillStyle = "black";
-        ctx.font = "900 20px Arial";
-        ctx.fillText("♞", this.x + 10, this.y + this.size / 1.5);
+        mineS.ctx.font = "20px Arial";
+        mineS.ctx.fillStyle = "black";
+        mineS.ctx.fillText("♟", this.x + 10, this.y + this.size / 1.5);
       }
-      ctx.fill();
-      ctx.stroke();
+      mineS.ctx.fill();
+      mineS.ctx.stroke();
     }
   }
 
@@ -61,7 +62,7 @@ class Cell {
         if (
           isBetween(offSetX, -1, mineS.boardSize) &&
           isBetween(offSetY, -1, mineS.boardSize) &&
-          grid[offSetX][offSetY].isBomb
+          mineS.grid[offSetX][offSetY].isBomb
         ) {
           this.bombNeighbor++;
         }
@@ -73,16 +74,50 @@ class Cell {
     // Creates the canvas numbers and placements
     if (this.isRevealed) {
       if (this.bombNeighbor > 0) {
-        ctx.fillStyle = "black";
-        ctx.font = "900 20px Arial";
-        ctx.fillText(this.bombNeighbor, this.x + 15, this.y + this.size / 1.5);
+        mineS.ctx.font = "900 20px Arial";
+        mineS.ctx.fillStyle = "black";
+        mineS.ctx.fillText(
+          this.bombNeighbor,
+          this.x + 15,
+          this.y + this.size / 1.5
+        );
       }
 
-      ctx.stroke();
+      mineS.ctx.stroke();
     }
   }
 
+  flagged() {
+    switch (this.isFlag) {
+      case false:
+        this.isFlag = true;
+        mineS.flagCount--;
+        mineS.ctx.beginPath();
+        mineS.ctx.font = "20px Arial";
+        mineS.ctx.fillStyle = "black";
+        mineS.ctx.fillText("🚩", this.x + 10, this.y + this.size / 1.5);
+        mineS.ctx.stroke();
+        break;
+      case true:
+        this.isFlag = false;
+        mineS.flagCount++;
+        mineS.ctx.beginPath();
+        mineS.ctx.fillStyle = "white";
+        mineS.ctx.fillRect(
+          this.x + 1,
+          this.y + 1,
+          this.size - 2,
+          this.size - 2
+        );
+        mineS.ctx.stroke();
+    }
+    adjustFlagText(mineS.flagCount);
+  }
+
   reveal() {
+    if (this.isFlag) {
+      this.flagged();
+    }
     if (this.isRevealed === false) {
       this.isRevealed = true;
     }
@@ -101,7 +136,7 @@ class Cell {
           isBetween(offSetX, -1, mineS.boardSize) &&
           isBetween(offSetY, -1, mineS.boardSize)
         ) {
-          let cellFill = grid[offSetX][offSetY];
+          let cellFill = mineS.grid[offSetX][offSetY];
           if (!cellFill.isBomb && !cellFill.isRevealed) {
             cellFill.reveal();
             cellFill.show();
