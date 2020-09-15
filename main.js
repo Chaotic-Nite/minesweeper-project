@@ -2,13 +2,13 @@
 // Created on 8/19/2020
 // By Noel Kling
 
-let ctx = null;
-let grid;
-
 let mineS = {
+  grid: [],
   ctx: null,
   firstClick: true,
+  playerDied: false,
   bombCount: 25,
+  flagCount: 25,
   sizeCell: 40,
   boardSize: 14,
   canvas: document.getElementById("gameBoard"),
@@ -36,12 +36,12 @@ function buildCanvas() {
 
 function Setup() {
   // Setup canvas
-  ctx = mineS.canvas.getContext("2d");
+  mineS.ctx = mineS.canvas.getContext("2d");
 
   buildCanvas();
   // Set white background
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, mineS.canvas.width, mineS.canvas.width);
+  mineS.ctx.fillStyle = "#FFFFFF";
+  mineS.ctx.fillRect(0, 0, mineS.canvas.width, mineS.canvas.width);
 
   drawCell();
   createBombs();
@@ -50,14 +50,14 @@ function Setup() {
 
 // Board Setup -
 
-// Creates the grid for the mines
+// Creates the mineS.grid for the mines
 function drawCell() {
   // Constructs the 2D array for the cells
-  grid = twoDArray(mineS.boardSize);
-  // Create cells that hold the grid
+  mineS.grid = twoDArray(mineS.boardSize);
+  // Create cells that hold the mineS.grid
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
-      grid[i][j] = new Cell(i, j, mineS.sizeCell);
+      mineS.grid[i][j] = new Cell(i, j, mineS.sizeCell);
     }
   }
 }
@@ -68,8 +68,8 @@ function createBombs() {
     let x = randomPos();
     let y = randomPos();
 
-    if (!grid[x][y].isBomb) {
-      grid[x][y].isBomb = true;
+    if (!mineS.grid[x][y].isBomb) {
+      mineS.grid[x][y].isBomb = true;
       mineS.bombCount--;
     }
   }
@@ -78,7 +78,7 @@ function createBombs() {
 }
 
 function swapToBomb(oldPos) {
-  let newBomb = grid[randomPos()][randomPos()];
+  let newBomb = mineS.grid[randomPos()][randomPos()];
   if (newBomb != oldPos && !newBomb.isBomb) {
     newBomb.isBomb;
     mainBombCount();
@@ -90,7 +90,7 @@ function swapToBomb(oldPos) {
 function mainBombCount() {
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
-      grid[i][j].bombCount();
+      mineS.grid[i][j].bombCount();
     }
   }
 }
@@ -104,38 +104,58 @@ function checkCell() {
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
       if (
-        isBetween(x, grid[i][j].x, grid[i][j].x + grid[i][j].size) &&
-        isBetween(y, grid[i][j].y, grid[i][j].y + grid[i][j].size)
+        isBetween(
+          x,
+          mineS.grid[i][j].x,
+          mineS.grid[i][j].x + mineS.grid[i][j].size
+        ) &&
+        isBetween(
+          y,
+          mineS.grid[i][j].y,
+          mineS.grid[i][j].y + mineS.grid[i][j].size
+        )
       ) {
         switch (mineS.mouseClick.clickType) {
           case 1:
-            setUpCell(grid[i][j]);
+            selectCell(mineS.grid[i][j]);
             break;
           case 3:
-            console.log("HEIEHLRKHSL");
+            flaggingRight(mineS.grid[i][j]);
         }
       }
     }
   }
 }
 
-function setUpCell(cell) {
+function selectCell(cell) {
   switch (mineS.firstClick) {
     case true:
       if (cell.isBomb) {
         cell.isBomb = false;
-        swapToBomb(oldPos);
+        swapToBomb(cell);
       }
       mineS.firstClick = false;
       revealShow(cell);
       break;
     default:
       if (cell.isBomb) {
-        console.log("FUCK");
+        gameOver();
       } else {
         revealShow(cell);
       }
   }
+}
+
+function flaggingRight(cell) {
+  if (mineS.flagCount > 0 && !cell.isRevealed) {
+    cell.flagged();
+  }
+}
+
+function adjustFlagText(num) {
+  let flagText = document.getElementById("flag");
+  flagText.innerText = "🚩Flags: " + num;
+  flagText.append();
 }
 
 // Switch case that will do reveals and shows
@@ -157,11 +177,31 @@ function revealShow(cell, x) {
 function showBoard() {
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
-      revealShow(grid[i][j], 2);
+      revealShow(mineS.grid[i][j], 2);
     }
   }
 }
 
+// Game Over when left click on a bomb
+function gameOver() {
+  for (let i = 0; i < mineS.boardSize; i++) {
+    for (let j = 0; j < mineS.boardSize; j++) {
+      switch (mineS.playerDied) {
+        case false:
+          revealShow(mineS.grid[i][j]);
+          break;
+
+        default:
+          if (
+            mineS.grid[i][j].isBomb === true &&
+            mineS.grid[i][j].isFlag === false
+          ) {
+            revealShow(mineS.grid[i][j]);
+          }
+      }
+    }
+  }
+}
 // Set of functions for back end of the functions.
 
 // Function to check if a number is in a range.
