@@ -8,3 +8,4 @@ The Coding Train: Where I had learned how to use constructors in JS form
 codeinwp: right click disable menu popup
 Stack Overflow user: cyber-guard (and Manny Ledoux for the suggestion of it) the event to get the e.which
 Stack Overflow user: Pentium10 (How to clear parts of the canvas)
+Medium: Syd Bailey (How to figure out timer)

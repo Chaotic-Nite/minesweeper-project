@@ -54,6 +54,7 @@ class Cell {
     if (this.isBomb) {
       return;
     }
+    this.bombNeighbor = 0;
     for (let seeX = -1; seeX <= 1; seeX++) {
       for (let seeY = -1; seeY <= 1; seeY++) {
         // Cycles through each cell in a 3x3 to determine if any edge/corner touch a bomb
@@ -81,6 +82,14 @@ class Cell {
           this.x + 15,
           this.y + this.size / 1.5
         );
+      } else if (!this.isBomb) {
+        mineS.ctx.fillStyle = "#d9d9d9";
+        mineS.ctx.fillRect(
+          this.x + 1,
+          this.y + 1,
+          this.size - 2,
+          this.size - 2
+        );
       }
 
       mineS.ctx.stroke();
@@ -88,20 +97,19 @@ class Cell {
   }
 
   flagged() {
+    mineS.ctx.beginPath();
     switch (this.isFlag) {
       case false:
         this.isFlag = true;
         mineS.flagCount--;
-        mineS.ctx.beginPath();
         mineS.ctx.font = "20px Arial";
         mineS.ctx.fillStyle = "black";
         mineS.ctx.fillText("🚩", this.x + 10, this.y + this.size / 1.5);
-        mineS.ctx.stroke();
+
         break;
       case true:
         this.isFlag = false;
         mineS.flagCount++;
-        mineS.ctx.beginPath();
         mineS.ctx.fillStyle = "white";
         mineS.ctx.fillRect(
           this.x + 1,
@@ -109,8 +117,8 @@ class Cell {
           this.size - 2,
           this.size - 2
         );
-        mineS.ctx.stroke();
     }
+    mineS.ctx.stroke();
     adjustFlagText(mineS.flagCount);
   }
 
