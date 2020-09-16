@@ -13,6 +13,7 @@ let mineS = {
   boardSize: 14,
   canvas: document.getElementById("gameBoard"),
   mouseClick: { x: 0, y: 0, clickType: 0 },
+  tick: 0,
 };
 
 function twoDArray(gameGrid) {
@@ -130,6 +131,7 @@ function checkCell() {
 function selectCell(cell) {
   switch (mineS.firstClick) {
     case true:
+      timer();
       if (cell.isBomb) {
         cell.isBomb = false;
         swapToBomb(cell);
@@ -184,6 +186,7 @@ function showBoard() {
 
 // Game Over when left click on a bomb
 function gameOver() {
+  clearInterval(mineS.tick);
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
       switch (mineS.playerDied) {
@@ -211,6 +214,17 @@ function isBetween(target, min, max) {
   } else {
     return false;
   }
+}
+
+// Timer Function says Hi
+function timer() {
+  let timer = document.getElementById("time");
+  let time = 0;
+
+  mineS.tick = setInterval(function () {
+    timer.innerHTML = time;
+    time++;
+  }, 1000);
 }
 
 function randomPos() {
