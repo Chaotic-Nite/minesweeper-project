@@ -18,6 +18,7 @@ class Cell {
     this.isRevealed = false;
     this.isFlag = false;
     this.bombNeighbor = 0;
+    this.clicked = false;
   }
 
   show() {
@@ -41,7 +42,7 @@ class Cell {
       if (this.isBomb) {
         mineS.ctx.font = "20px Arial";
         mineS.ctx.fillStyle = "black";
-        mineS.ctx.fillText("♟", this.x + 10, this.y + this.size / 1.5);
+        mineS.ctx.fillText("💀", this.x + 8, this.y + this.size / 1.5);
       }
       mineS.ctx.fill();
       mineS.ctx.stroke();
@@ -54,6 +55,7 @@ class Cell {
     if (this.isBomb) {
       return;
     }
+    // This is a precaution if the firstclick was on the bomb to reset the numbers
     this.bombNeighbor = 0;
     for (let seeX = -1; seeX <= 1; seeX++) {
       for (let seeY = -1; seeY <= 1; seeY++) {
@@ -72,7 +74,6 @@ class Cell {
   }
 
   notBomb() {
-    // Creates the canvas numbers and placements
     if (this.isRevealed) {
       if (this.bombNeighbor > 0) {
         mineS.ctx.font = "900 20px Arial";
@@ -123,14 +124,21 @@ class Cell {
   }
 
   reveal() {
-    if (this.isFlag) {
-      this.flagged();
-    }
-    if (this.isRevealed === false) {
-      this.isRevealed = true;
-    }
-    if (this.bombNeighbor === 0) {
-      this.fillFlood();
+    switch (this.clicked) {
+      case true:
+        console.log("Cell Already revealed");
+        break;
+      default:
+        mineS.mineFreeCell--;
+        if (this.isFlag) {
+          this.flagged();
+        }
+        if (this.isRevealed === false) {
+          this.isRevealed = true;
+        }
+        if (this.bombNeighbor === 0) {
+          this.fillFlood();
+        }
     }
   }
 
