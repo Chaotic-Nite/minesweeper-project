@@ -10,10 +10,12 @@ let mineS = {
   bombCount: 25,
   flagCount: 25,
   sizeCell: 40,
-  boardSize: 14,
+  boardSize: 15,
   canvas: document.getElementById("gameBoard"),
   mouseClick: { x: 0, y: 0, clickType: 0 },
   tick: 0,
+  time: 0,
+  mineFreeCell: 0,
 };
 
 function twoDArray(gameGrid) {
@@ -65,13 +67,14 @@ function drawCell() {
 
 // Places bombs onto the field
 function createBombs() {
-  while (mineS.bombCount != 0) {
+  let bomb = mineS.bombCount;
+  while (bomb != 0) {
     let x = randomPos();
     let y = randomPos();
 
     if (!mineS.grid[x][y].isBomb) {
       mineS.grid[x][y].isBomb = true;
-      mineS.bombCount--;
+      bomb--;
     }
   }
 
@@ -91,7 +94,10 @@ function swapToBomb(oldPos) {
 function mainBombCount() {
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
-      mineS.grid[i][j].bombCount();
+      if (!mineS.grid[i][j].isBomb) {
+        mineS.grid[i][j].bombCount();
+        mineS.mineFreeCell++;
+      }
     }
   }
 }
@@ -141,8 +147,12 @@ function selectCell(cell) {
       break;
     default:
       if (cell.isBomb) {
+        mineS.playerDied = true;
+        gameOver();
+      } else if (mineS.mineFreeCell === 0) {
         gameOver();
       } else {
+        console.log(mineS.mineFreeCell);
         revealShow(cell);
       }
   }
@@ -189,20 +199,30 @@ function gameOver() {
   clearInterval(mineS.tick);
   for (let i = 0; i < mineS.boardSize; i++) {
     for (let j = 0; j < mineS.boardSize; j++) {
+      let cell = mineS.grid[i][j];
       switch (mineS.playerDied) {
         case false:
-          revealShow(mineS.grid[i][j]);
+          revealShow(cell);
           break;
 
         default:
-          if (
-            mineS.grid[i][j].isBomb === true &&
-            mineS.grid[i][j].isFlag === false
-          ) {
-            revealShow(mineS.grid[i][j]);
+          if (cell.isBomb && !cell.isFlag) {
+            revealShow(cell);
           }
       }
     }
+  }
+  gameAlert(mineS.playerDied);
+}
+
+function gameAlert(player) {
+  if (player) {
+    let redo = confirm("You've met with a Terrible Fate, Try Again? ");
+    if (redo) {
+      reset();
+    }
+  } else {
+    alert("Congratulations! You've survived the sweep.");
   }
 }
 // Set of functions for back end of the functions.
@@ -219,12 +239,11 @@ function isBetween(target, min, max) {
 // Timer Function says Hi
 function timer() {
   let timer = document.getElementById("time");
-  let time = 0;
 
   mineS.tick = setInterval(function () {
-    timer.innerHTML = time;
-    time++;
-  }, 1000);
+    timer.innerHTML = mineS.time;
+    mineS.time++;
+  }, 700);
 }
 
 function randomPos() {
@@ -247,6 +266,28 @@ function cursorPos(canvas, event) {
       mineS.mouseClick.clickType = 3;
       break;
   }
+}
+
+function gameDifficulty(newBoardSize, bombAmount) {
+  mineS.boardSize = newBoardSize;
+  mineS.bombCount = bombAmount;
+  reset();
+}
+
+function reset() {
+  clearInterval(mineS.tick);
+  mineS.time = 0;
+  mineS.tick = 0;
+
+  mineS.flagCount = mineS.bombCount;
+
+  mineS.mineFreeCell = 0;
+  mineS.playerDied = false;
+  mineS.firstClick = true;
+  mineS.mouseClick = { x: 0, y: 0, clickType: 0 };
+
+  Setup();
+  adjustFlagText(mineS.bombCount);
 }
 
 function updateMap() {

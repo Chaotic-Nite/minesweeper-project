@@ -16,20 +16,30 @@ body {
 
 #flag {
   margin-left: -25%;
-  margin-right: 25%;
+  margin-right: 20%;
+  align-self: flex-end;
 }
 
 .timer {
   display: flex;
   margin-left: 25%;
   margin-right: -40%;
+  align-self: flex-end;
 }
 
 #time {
   margin-left: 5px;
 }
 
+.difficulty {
+  margin: -15px 20% 10px 20%;
+}
+
 .instructions {
   font-family: "Times New Roman", Times, serif;
   font-weight: bold;
+}
+
+#gameBoard {
+  border: 3px solid black;
 }
