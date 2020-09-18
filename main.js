@@ -15,6 +15,7 @@ let mineS = {
   mouseClick: { x: 0, y: 0, clickType: 0 },
   tick: 0,
   time: 0,
+  timer: document.getElementById("time"),
   mineFreeCell: 0,
 };
 
@@ -74,6 +75,7 @@ function createBombs() {
 
     if (!mineS.grid[x][y].isBomb) {
       mineS.grid[x][y].isBomb = true;
+      console.log(x + " " + y);
       bomb--;
     }
   }
@@ -100,6 +102,7 @@ function mainBombCount() {
       }
     }
   }
+  mineS.mineFreeCell--;
 }
 
 // Checks and Reveals -
@@ -132,6 +135,7 @@ function checkCell() {
       }
     }
   }
+  mineS.mouseClick = { x: 0, y: 0, clickType: 0 };
 }
 
 function selectCell(cell) {
@@ -201,17 +205,18 @@ function gameOver() {
     for (let j = 0; j < mineS.boardSize; j++) {
       let cell = mineS.grid[i][j];
       switch (mineS.playerDied) {
-        case false:
+        case true:
           revealShow(cell);
           break;
 
         default:
-          if (cell.isBomb && !cell.isFlag) {
+          if (!cell.isFlag) {
             revealShow(cell);
           }
       }
     }
   }
+  mineS.canvas.style.pointerEvents = "none";
   gameAlert(mineS.playerDied);
 }
 
@@ -238,10 +243,8 @@ function isBetween(target, min, max) {
 
 // Timer Function says Hi
 function timer() {
-  let timer = document.getElementById("time");
-
   mineS.tick = setInterval(function () {
-    timer.innerHTML = mineS.time;
+    mineS.timer.innerText = mineS.time;
     mineS.time++;
   }, 700);
 }
@@ -278,9 +281,11 @@ function reset() {
   clearInterval(mineS.tick);
   mineS.time = 0;
   mineS.tick = 0;
+  mineS.timer.innerText = "0";
 
   mineS.flagCount = mineS.bombCount;
 
+  mineS.canvas.style.pointerEvents = "auto";
   mineS.mineFreeCell = 0;
   mineS.playerDied = false;
   mineS.firstClick = true;
