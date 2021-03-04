@@ -13,13 +13,39 @@
     <meta name="keywords" content="Kenzie" />
 
     <!-- Title Page-->
-    <title>Kenzie HTML Page</title>
+    <title>Noel K's Minesweeper</title>
 
     <!-- CSS-->
     <link href="css/main.css" rel="stylesheet" media="all" />
   </head>
 
   <body>
-    <!-- Your html here -->
+    <div class="title">
+      <h2 id="flag">🚩Flags: 25</h2>
+      <h1>Minesweeper</h1>
+
+      <div class="timer">
+        <h2>Timer:</h2>
+        <h2 id="time">0</h2>
+      </div>
+    </div>
+    <div class="difficulty">
+      <button id="easy" onclick="gameDifficulty(10,10)">Easy</button>
+      <button id="normal" onclick="gameDifficulty(15,35)">Normal</button>
+      <button id="hard" onclick="gameDifficulty(25,125)">Hard</button>
+    </div>
+
+    <div>
+      <canvas id="gameBoard">Your browser does not support this game</canvas>
+    </div>
+
+    <div class="instructions">
+      <p>Right Click to flag</p>
+      <button onclick="reset()">Reset</button>
+    </div>
+
+    <!-- Javascript -->
+    <script src="main.js"></script>
+    <script src="object.js"></script>
   </body>
 </html>
