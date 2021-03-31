@@ -1,6 +1,18 @@
 # Kenzie Academy HTML Project
 
-Citation List:
+## Minesweeper
+
+Inspired by the 1992 [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) is used with the board being entirely made out of a canvas and the individual cells laying on top. The cells themselves are all within a class that's looped through for the main portions of the game. 
+
+This is a clean and more visually easy piece.
+
+#Added Features
+- THree different diffculties
+- Right-click flagging
+- Timer
+- Ability to reset page
+
+# Citation List:
 codeinwp: right click disable menu popup
 
 Medium: Syd Bailey (How to figure out timer)
