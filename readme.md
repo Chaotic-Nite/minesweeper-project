@@ -6,7 +6,7 @@ Inspired by the 1992 [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(vi
 
 This is a clean and more visually easy piece.
 
-#Added Features
+# Added Features
 - THree different diffculties
 - Right-click flagging
 - Timer
