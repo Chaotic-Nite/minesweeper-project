@@ -1,4 +1,4 @@
-# Kenzie Academy HTML Project
+### Code Project from Kenzie Academy
 
 ## Minesweeper
 
